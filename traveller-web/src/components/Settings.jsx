@@ -25,8 +25,13 @@ function Settings() {
   };
 
   return (
-    <Container className="mt-4 mb-4" style={{width: Capacitor.getPlatform() == 'web' ? '450px' : ""}}>
-      
+    <Container className='st-2 mt-4'>
+      <Row className="justify-content-center">
+          <Col md={6} lg={5}>
+            <div className="text-center">
+
+              <h1 className="h3 mb-3">Settings</h1>
+            </div>
       <Form onSubmit={handleSubmit}>
         <Form.Group controlId="currentPassword">
           <Form.Label>Existing Password</Form.Label>
@@ -65,6 +70,8 @@ function Settings() {
           Update Password
         </Button>
       </Form>
+      </Col>
+      </Row>
     </Container>
   );
 }
