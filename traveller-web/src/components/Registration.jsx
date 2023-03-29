@@ -5,6 +5,7 @@ import logo from '../logo.svg';
 import { API_BASE_URL as API_BASE_URL } from '../Constants'
 import { Link } from 'react-router-dom';
 import { Nav } from 'react-bootstrap';
+import { Capacitor } from '@capacitor/core';
 
 
 function Registration() {
@@ -52,7 +53,7 @@ function Registration() {
   return (
     <>
 
-      <Container className='mt-4 st-2'>
+      <Container className='mt-4 st-2' style={{width: Capacitor.getPlatform() == 'web' ? '450px' : ""}}>
         <Row className="justify-content-center">
           <Col md={6} lg={5}>
             <div className="text-center">

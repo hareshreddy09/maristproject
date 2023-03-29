@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL as API_BASE_URL } from '../Constants'
 import axios from 'axios';
 import Loader from "./Loader";
+import { Capacitor } from "@capacitor/core";
 function Preference() {
 
   const [homeAddress, setHomeAddress] = useState("");
@@ -67,12 +68,13 @@ function Preference() {
         console.error(error);
       });
   }, []);
+  
 
   return (
     <>
     {loading && <Loader />}
-    <Container>
-      <h1>User Preferences</h1>
+    <Container className="mt-4 mb-4" style={{width: Capacitor.getPlatform() == 'web' ? '450px' : ""}}>
+      
       <Form onSubmit={handleSubmit}>
 
 

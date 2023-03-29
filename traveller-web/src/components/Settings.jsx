@@ -1,3 +1,4 @@
+import { Capacitor } from "@capacitor/core";
 import { useState } from "react";
 import { Container, Form, Button } from "react-bootstrap";
 import { useSelector } from 'react-redux';
@@ -24,8 +25,8 @@ function Settings() {
   };
 
   return (
-    <Container>
-      <h1>Settings</h1>
+    <Container className="mt-4 mb-4" style={{width: Capacitor.getPlatform() == 'web' ? '450px' : ""}}>
+      
       <Form onSubmit={handleSubmit}>
         <Form.Group controlId="currentPassword">
           <Form.Label>Existing Password</Form.Label>
