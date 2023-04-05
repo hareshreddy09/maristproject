@@ -126,7 +126,7 @@ function Dashboard() {
       //   payload: [source_w],
       // });
       getWeather(dst_lat, dst_lng).then(w => {setWeatherData2(w);
-        let dest_w = `${dstPlace.substring(0,8) + '...'} weather : ${w.weather[0].main}, Temp:${w.main.temp} Humidity:${w.main.humidity}` 
+        let dest_w = `weather : ${w.weather[0].main}, Temp:${w.main.temp} Humidity:${w.main.humidity}` 
         dispatch({
           type: 'SET_NOTIFICATION',
           payload: [...notifications,  dest_w],
@@ -250,10 +250,10 @@ function Dashboard() {
     setDistance(results.routes[0].legs[0].distance.text)
     setDuration(results.routes[0].legs[0].duration.text)
     let notificationMsg = `${dstPlace.substring(0,8) + '...'} distance:${results.routes[0].legs[0].distance.text} duration:${results.routes[0].legs[0].duration.text}`
-    dispatch({
-      type: 'SET_NOTIFICATION',
-      payload: [...notifications,  notificationMsg],
-    });
+    // dispatch({
+    //   type: 'SET_NOTIFICATION',
+    //   payload: [...notifications,  notificationMsg],
+    // });
   }
 
   function clearRoute() {
@@ -485,7 +485,7 @@ function Dashboard() {
               isRound
               onClick={() => {
                 map.panTo({lat: lat, lng: long})
-                map.setZoom(20)
+                map.setZoom(15)
               }}
             />
             </ButtonGroup>
