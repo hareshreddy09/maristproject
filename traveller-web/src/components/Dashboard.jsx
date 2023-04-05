@@ -485,7 +485,7 @@ function Dashboard() {
               isRound
               onClick={() => {
                 map.panTo({lat: lat, lng: long})
-                map.setZoom(15)
+                map.setZoom(5)
               }}
             />
             </ButtonGroup>
