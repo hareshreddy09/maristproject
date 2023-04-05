@@ -37,11 +37,12 @@ import {
   
 } from '@react-google-maps/api'
 import { useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { useBreakpointValue } from '@chakra-ui/react';
 import { icon } from '@fortawesome/fontawesome-svg-core'
 import RoadblockIcon from '../roadblock.png'
+
 
 const center = { lat: 48.8584, lng: 2.2945 }
 const REACT_APP_API_URL = 'https://api.openweathermap.org/data/2.5'
@@ -51,11 +52,13 @@ const REACT_APP_API_KEY = 'ba740b7456684cb8d90955612d044920'
 function Dashboard() {
   let count = 0;
   const authToken = useSelector(state => state.token);
+  const notifications = useSelector(state => state.notifications);
   const navigate = useNavigate();
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: 'AIzaSyCJ9ElM-eIfN2wM6AdBYjeUT7aqKWaq1nY',
     libraries: ['places'],
   })
+  const dispatch = useDispatch();
 
   const size = useBreakpointValue({ base: 'sm', md: 'md', lg: 'lg' });
 
@@ -117,7 +120,17 @@ function Dashboard() {
     
     
     getWeather(src_lat, src_lng).then(w => {setWeatherData(w);
+      // let source_w = `${srcPlace} weather : ${w.weather[0].main}, Temp:${w.main.temp} Humidity:${w.main.humidity}` 
+      // dispatch({
+      //   type: 'SET_NOTIFICATION',
+      //   payload: [source_w],
+      // });
       getWeather(dst_lat, dst_lng).then(w => {setWeatherData2(w);
+        let dest_w = `${dstPlace.substring(0,8) + '...'} weather : ${w.weather[0].main}, Temp:${w.main.temp} Humidity:${w.main.humidity}` 
+        dispatch({
+          type: 'SET_NOTIFICATION',
+          payload: [...notifications,  dest_w],
+        });
         setLoading(false)
          onOpen();
       
@@ -236,6 +249,11 @@ function Dashboard() {
     setDirectionsResponse(results)
     setDistance(results.routes[0].legs[0].distance.text)
     setDuration(results.routes[0].legs[0].duration.text)
+    let notificationMsg = `${dstPlace.substring(0,8) + '...'} distance:${results.routes[0].legs[0].distance.text} duration:${results.routes[0].legs[0].duration.text}`
+    dispatch({
+      type: 'SET_NOTIFICATION',
+      payload: [...notifications,  notificationMsg],
+    });
   }
 
   function clearRoute() {

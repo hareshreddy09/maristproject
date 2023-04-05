@@ -1,18 +1,26 @@
 import React, { useState } from 'react';
-import { Navbar, Nav, NavDropdown, Container } from 'react-bootstrap';
+import { Navbar, Nav, NavDropdown, Container, Badge } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUserCircle, faCog, faPencil, faSignOut, faBell } from '@fortawesome/free-solid-svg-icons'
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 function AppNavbar() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
+  const notifications = useSelector(state => state.notifications);
   const username = useSelector(state => state.username);
+  const dispatch = useDispatch();
   
   const handleDropdown = () => {
     setShowDropdown(!showDropdown);
   };
   const handleShowNotification = () => {
+    if(showNotification){
+      dispatch({
+        type: 'SET_NOTIFICATION',
+        payload: [],
+      })
+    }
     setShowNotification(!showNotification);
   };
 
@@ -32,7 +40,14 @@ function AppNavbar() {
             </Nav.Link>
             <NavDropdown
               title={
-                <FontAwesomeIcon icon={faBell} size="lg" />
+                <span>
+          <FontAwesomeIcon icon={faBell} size="lg" />
+          {notifications.length > 0 && (
+            <Badge pill variant="danger" className="ml-1">
+              {notifications.length}
+            </Badge>
+          )}
+        </span>
               }
               id="basic-nav-dropdown"
               show={showNotification}
@@ -40,12 +55,9 @@ function AppNavbar() {
               className="ml-2"
             >
                
-              <NavDropdown.Item >
-              Notification 1
-              </NavDropdown.Item>
-              <NavDropdown.Item >
-              Notification 2
-              </NavDropdown.Item>
+               {notifications.map((notification, index) => (
+        <NavDropdown.Item key={index}>{notification}</NavDropdown.Item>
+      ))}
               
             </NavDropdown>
             <NavDropdown

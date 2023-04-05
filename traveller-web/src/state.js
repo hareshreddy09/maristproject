@@ -5,7 +5,8 @@ const initialState = {
   token: null,
   username: null,
   work: null,
-  home: null
+  home: null,
+  notifications: []
 };
 
 const reducer = (state = initialState, action) => {
@@ -29,6 +30,11 @@ const reducer = (state = initialState, action) => {
     return {
         ...state,
         username: action.payload,
+    };
+    case 'SET_NOTIFICATION':
+    return {
+        ...state,
+        notifications: action.payload,
     };
     default:
       return state;
