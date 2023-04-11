@@ -12,7 +12,7 @@ function AppNavbar() {
   const username = useSelector(state => state.username);
   const dispatch = useDispatch();
 
-  
+
 
   const handleDropdown = () => {
 
@@ -65,15 +65,15 @@ function AppNavbar() {
               {notifications.map((notification, index) => (
                 <NavDropdown.Item key={index} >
 
-<div className="notification-item">
-      <span className="icon">
-        {notification.type === 'info' ? <AiOutlineInfoCircle /> : <AiOutlineWarning />}
-      </span>
-   
-        {notification.msg.length > 10 ? `${notification.msg.substring(0, 40)}` : notification.msg}
-        
-     
-    </div>
+                  <div className="notification-item">
+                    <span className="icon">
+                      {notification.type === 'info' ? <AiOutlineInfoCircle /> : <AiOutlineWarning />}
+                    </span>
+
+                    {notification.msg.length > 10 ? `${notification.msg.substring(0, 40)}` : notification.msg}
+
+
+                  </div>
                 </NavDropdown.Item>
               ))}
 
