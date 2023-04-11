@@ -18,7 +18,9 @@ function Settings() {
   }
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (newPassword !== confirmNewPassword) {
+    console.log(newPassword, confirmNewPassword)
+    if (newPassword != confirmNewPassword) {
+      
       setError("New Password & Confirm Password is different try again.");
       return;
     }

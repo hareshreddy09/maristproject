@@ -60,3 +60,15 @@ code {
   overflow:hidden;
  
 }
+.notification-item{
+  display: flex;
+  padding: 0 2px;
+  margin: 2px;
+}
+.notification-item .icon {
+  margin-right: 6px;
+}
+.dropdown-menu {
+  max-height: 500px !important;
+  overflow-y: scroll;
+}

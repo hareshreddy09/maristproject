@@ -15,6 +15,8 @@ import Registration from './components/Registration';
 import Preference from './components/Preference';
 import Settings from './components/Settings';
 import Logout from './components/Logout';
+import About from './components/About';
+import Contact from './components/Contact';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -33,6 +35,8 @@ root.render(
               <Route path='/preference' element={<Preference></Preference>}></Route>
               <Route path='/settings' element={<Settings></Settings>}></Route>
               <Route path='/logout' element={<Logout></Logout>}></Route>
+              <Route path='/about' element={<About></About>}></Route>
+              <Route path='/contact' element={<Contact></Contact>}></Route>
               <Route path='*' element={<Dashboard></Dashboard>}></Route>
             </Route>
           </Routes>

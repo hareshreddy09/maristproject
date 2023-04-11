@@ -34,14 +34,14 @@ import {
   Autocomplete,
   DirectionsRenderer,
   TrafficLayer
-  
+
 } from '@react-google-maps/api'
 import { useEffect, useRef, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { useBreakpointValue } from '@chakra-ui/react';
 import { icon } from '@fortawesome/fontawesome-svg-core'
-import RoadblockIcon from '../roadblock.png'
+
 
 
 const center = { lat: 48.8584, lng: 2.2945 }
@@ -75,19 +75,19 @@ function Dashboard() {
 
   // weather
   const [loading, setLoading] = useState(false);
-  const [weatherData, setWeatherData] = useState([])
-  const [weatherData2, setWeatherData2] = useState([])
+  const [weatherDetails, setWeatherDetails] = useState([])
   const [srcPlace, setSrcPlace] = useState("");
   const [dstPlace, setDstPlace] = useState("");
   const [error, setError] = useState(null);
   const [lat, setLat] = useState(null);
   const [long, setLong] = useState(null);
-  
+
   const [forecast, setForecast] = useState([]);
 
 
-  
-  async function onDrawerOpen(){
+
+  async function onDrawerOpen() {
+   
     if (originRef.current.value === '' || destiantionRef.current.value === '') {
       return
     }
@@ -98,6 +98,36 @@ function Dashboard() {
     let src_lng;
     let dst_lat;
     let dst_lng;
+
+    const getWeatherNotification = (weatherData) => {
+      let n = { type: "info", msg: "" }
+      if (weatherData.weather[0].main === 'Thunderstorm') {
+        n.msg = `Thunderstorm|${weatherData.name}`;
+        n.type = "warn"
+      } else if (weatherData.weather[0].main === 'Drizzle') {
+        n.msg = `Drizzle|${weatherData.name}`;
+        n.type = "warn"
+      } else if (weatherData.weather[0].main === 'Rain') {
+        n.msg = `Rain|${weatherData.name}`;
+        n.type = "warn"
+      } else if (weatherData.weather[0].main === 'Snow') {
+        n.msg = `Snow|${weatherData.name}`;
+        n.type = "warn"
+      } else if (weatherData.weather[0].main === 'Clear') {
+        n.msg = `Clear|${weatherData.name}`;
+        n.type = "info"
+      } else if (weatherData.weather[0].main === 'Clouds') {
+        n.msg = `Clouds|${weatherData.name}`;
+        n.type = "warn"
+      } else {
+        n.msg = `Clear|${weatherData.name}`;
+        n.type = "info"
+      }
+      return n;
+
+
+
+    }
     try {
       const results = await directionsService.route({
         origin: originRef.current.value,
@@ -105,46 +135,76 @@ function Dashboard() {
         // eslint-disable-next-line no-undef
         travelMode: google.maps.TravelMode.DRIVING,
       })
-      
+
       src_lat = results.routes[0].legs[0].start_location.lat();
       src_lng = results.routes[0].legs[0].start_location.lng();
       dst_lat = results.routes[0].legs[0].end_location.lat();
       dst_lng = results.routes[0].legs[0].end_location.lng();
       setSrcPlace(results.routes[0].legs[0].start_address);
       setDstPlace(results.routes[0].legs[0].end_address);
-    } catch(e) {
-      alert("Try setting source and destination again");
+
+
+      let wDetails = []
+      let notifications = []
+      let srcw = await getWeather(results.routes[0].legs[0].start_location.lat(), results.routes[0].legs[0].start_location.lng());
+      srcw.name = results.routes[0].legs[0].start_address
+      notifications.push(getWeatherNotification(srcw))
+      wDetails.push(srcw);
+
+      for (let step of results.routes[0].legs[0].steps) {
+        let wdata = await getWeather(step.start_location.lat(), step.end_location.lng())
+        // wdata.name = `${step.start_location.lat()}|${ step.end_location.lng()}`
+        notifications.push(getWeatherNotification(wdata))
+        wDetails.push(wdata)
+      }
+      let dstw = await getWeather(results.routes[0].legs[0].end_location.lat(), results.routes[0].legs[0].end_location.lng());
+      dstw.name = results.routes[0].legs[0].end_address
+      notifications.push(getWeatherNotification(dstw))
+      wDetails.push(dstw)
+
+      setWeatherDetails(wDetails)
+      dispatch({
+        type: 'SET_NOTIFICATION',
+        payload: [...notifications],
+      });
+      setLoading(false)
+      onOpen();
+    } catch (e) {
+      alert("Failed to get Weather data.Try setting source and destination again");
       return;
     }
-    
-    
-    
-    getWeather(src_lat, src_lng).then(w => {setWeatherData(w);
+
+
+
+    /** 
+    getWeather(src_lat, src_lng).then(w => {
+      setWeatherData(w);
       // let source_w = `${srcPlace} weather : ${w.weather[0].main}, Temp:${w.main.temp} Humidity:${w.main.humidity}` 
       // dispatch({
       //   type: 'SET_NOTIFICATION',
       //   payload: [source_w],
       // });
-      getWeather(dst_lat, dst_lng).then(w => {setWeatherData2(w);
-        let dest_w = `weather : ${w.weather[0].main}, Temp:${w.main.temp} Humidity:${w.main.humidity}` 
+      getWeather(dst_lat, dst_lng).then(w => {
+        setWeatherData2(w);
+        let dest_w = `weather : ${w.weather[0].main}, Temp:${w.main.temp} Humidity:${w.main.humidity}`
         dispatch({
           type: 'SET_NOTIFICATION',
-          payload: [...notifications,  dest_w],
+          payload: [...notifications, dest_w],
         });
         setLoading(false)
-         onOpen();
-      
+        onOpen();
+
       }).catch(err => {
         setLoading(false);
         alert("Failed to get Weather data.")
       });
-      
-    
+
+
     }).catch(err => {
       setLoading(false);
       alert("Failed to get Weather data.")
     });
-
+**/
 
   }
 
@@ -173,7 +233,7 @@ function Dashboard() {
       .then(res => handleResponse(res))
       .then(weather => {
         return weather;
-        
+
         // if (Object.entries(weather).length) {
         //   const mappedData = mapDataToWeatherInterface(weather);
         //   return mappedData;
@@ -226,14 +286,26 @@ function Dashboard() {
 
 
 
- 
+
   async function calculateRoute() {
-    
+    const getStepColor = (step, avgSpeed) => {
+
+      let speed = step.distance.value / step.duration.value;
+      // speed = speed + (20/100*speed);
+      console.log("avgspeed,speed", avgSpeed, ",", speed)
+      return speed <= avgSpeed ? '#00ff00' : '#ff0000';
+    }
+
+    const getTitle = (str) => {
+      return str.replace(/<\/?([a-z][a-z0-9]*)\b[^>]*>|<!--[\s\S]*?-->/gi, '');
+    }
+
 
     if (originRef.current.value === '' || destiantionRef.current.value === '') {
       return
     }
     count = count + 1;
+
     // eslint-disable-next-line no-undef
     // const trafficLayer = new google.maps.TrafficLayer();
     // trafficLayer.setMap(map);
@@ -244,16 +316,112 @@ function Dashboard() {
       destination: destiantionRef.current.value,
       // eslint-disable-next-line no-undef
       travelMode: google.maps.TravelMode.DRIVING,
+      drivingOptions: {
+        departureTime: new Date(Date.now()),
+        // eslint-disable-next-line no-undef
+        trafficModel: google.maps.TrafficModel.BEST_GUESS
+      }
     })
     console.log(results.routes)
+
+    const route = results.routes[0];
+
+    const isJam = (step, avgSpeed) => {
+      
+      let speed = step.distance.value / step.duration.value;
+
+      console.log("Jam avgspeed,speed", avgSpeed, ",", speed)
+      return speed <= 0.1 ? true : false;
+
+    }
+
+    // eslint-disable-next-line no-undef
+    const bounds = new google.maps.LatLngBounds();
+    bounds.extend({ lat: route.legs[0].start_location.lat(), lng: route.legs[0].start_location.lng() });
+    bounds.extend({ lat: route.legs[0].end_location.lat(), lng: route.legs[0].end_location.lng() });
+    map.fitBounds(bounds);
+    let n = []
+    // trafficLayer.setMap(map);
+    route.legs.forEach(leg => {
+
+      leg.steps.forEach(step => {
+
+        const p = [
+          { lat: step.start_location.lat(), lng: step.start_location.lng() },
+          { lat: step.end_location.lat(), lng: step.end_location.lng() }
+        ];
+        // eslint-disable-next-line no-undef
+        const path = google.maps.geometry.encoding.decodePath(step.polyline.points);
+        // eslint-disable-next-line no-undef
+        const polyline = new google.maps.Polyline({
+          path: path,
+          strokeColor: getStepColor(step, route.legs[0].distance.value / route.legs[0].duration.value),
+          strokeOpacity: 1.0,
+          strokeWeight: 5
+        });
+        polyline.setMap(map);
+        //eslint-disable-next-line no-undef
+
+        if (isJam(step, route.legs[0].distance.value / route.legs[0].duration.value)) {
+          n.push({"type": "warn", "msg": "Road Blockage" + "|" + step.start_location})
+         
+          // eslint-disable-next-line no-undef
+          const block = new google.maps.Marker({
+
+            position: {
+              lat: parseFloat(step.start_location.lat()),
+              lng: parseFloat(step.start_location.lng())
+            },
+            map: map,
+            title: getTitle(step.instructions),
+            icon: {
+              // https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPxDSuWbsL-i9FbA4Y562pM2csgXuCTAz1Dw&usqp=CAU
+              // https://maps.google.com/mapfiles/kml/shapes/placemark_circle.png
+
+              url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPxDSuWbsL-i9FbA4Y562pM2csgXuCTAz1Dw&usqp=CAU",
+              //eslint-disable-next-line no-undef
+              scaledSize: new google.maps.Size(30, 30),
+            },
+            zIndex: 999,
+          });
+          block.setMap(map);
+        }
+        else {
+         
+          n.push({"type": "info", "msg": "Light Traffic" + "|" + step.start_location})
+           // eslint-disable-next-line no-undef
+          const marker = new google.maps.Marker({
+
+            position: {
+              lat: parseFloat(step.start_location.lat()),
+              lng: parseFloat(step.start_location.lng())
+            },
+            map: map,
+            title: getTitle(step.instructions),
+            icon: {
+              // https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPxDSuWbsL-i9FbA4Y562pM2csgXuCTAz1Dw&usqp=CAU
+              // https://maps.google.com/mapfiles/kml/shapes/placemark_circle.png
+
+              url: "https://maps.google.com/mapfiles/kml/shapes/placemark_circle.png",
+              //eslint-disable-next-line no-undef
+              scaledSize: new google.maps.Size(30, 30),
+            },
+            zIndex: 999,
+          });
+          // Set the marker on the map
+          marker.setMap(map);
+        }
+      });
+    });
+
     setDirectionsResponse(results)
     setDistance(results.routes[0].legs[0].distance.text)
     setDuration(results.routes[0].legs[0].duration.text)
-    let notificationMsg = `${dstPlace.substring(0,8) + '...'} distance:${results.routes[0].legs[0].distance.text} duration:${results.routes[0].legs[0].duration.text}`
-    // dispatch({
-    //   type: 'SET_NOTIFICATION',
-    //   payload: [...notifications,  notificationMsg],
-    // });
+    let notificationMsg = `${dstPlace.substring(0, 8) + '...'} distance:${results.routes[0].legs[0].distance.text} duration:${results.routes[0].legs[0].duration.text}`
+    dispatch({
+      type: 'SET_NOTIFICATION',
+      payload: [...n],
+    });
   }
 
   function clearRoute() {
@@ -264,7 +432,7 @@ function Dashboard() {
     destiantionRef.current.value = ''
   }
   if (!authToken) {
-    //navigate('/login');
+    navigate('/login');
 
   }
 
@@ -282,9 +450,9 @@ function Dashboard() {
       >
 
         <Box position='absolute' left={0} top={0} h='100%' w='100%'>
-        {(loading) ? (
-        <>loading</>
-      ): (<></>)}
+          {(loading) ? (
+            <>loading</>
+          ) : (<></>)}
           {/* Google Map Box */}
           <GoogleMap
             center={center}
@@ -299,14 +467,14 @@ function Dashboard() {
             }}
             onLoad={map => {
               setMap(map);
-              
+
             }}
           >
-            <Marker position={center} />
+            {/* <Marker position={center} />
             <TrafficLayer ></TrafficLayer>
             {directionsResponse && (
               <DirectionsRenderer directions={directionsResponse} />
-            )}
+            )} */}
           </GoogleMap>
         </Box>
         <Box
@@ -319,7 +487,7 @@ function Dashboard() {
 
           zIndex='1'
         >
-          
+
           <VStack
             spacing={2}
             justifyContent='center'
@@ -388,7 +556,7 @@ function Dashboard() {
             <DrawerHeader>Weather Details</DrawerHeader>
 
             <DrawerBody>
-              <Weather weatherData={weatherData} weatherData2={weatherData2} srcPlace={srcPlace} endPlace={dstPlace}></Weather>
+              <Weather weatherDetails={weatherDetails}></Weather>
             </DrawerBody>
 
             <DrawerFooter>
@@ -411,10 +579,10 @@ function Dashboard() {
         w='100vw'
       >
         <Box position='absolute' left={0} top={0} h='100%' w='100%'>
-        {(loading) ? (
-        <Progress size='xs' isIndeterminate />
-      ): (<></>)}
-       
+          {(loading) ? (
+            <Progress size='xs' isIndeterminate />
+          ) : (<></>)}
+
           {/* Google Map Box */}
           <GoogleMap
             center={center}
@@ -430,14 +598,14 @@ function Dashboard() {
             onLoad={map => setMap(map)}
           >
             {/* <Marker position={center} /> */}
-            <Marker position={ { lat: lat, lng: long }} icon={RoadblockIcon} visible={true}></Marker>
-            <TrafficLayer autoUpdate></TrafficLayer>
-            {directionsResponse && (
-              <DirectionsRenderer directions={directionsResponse} />
-            )}
+            {/* <Marker position={ { lat: lat, lng: long }} icon={RoadblockIcon} visible={true}></Marker> */}
+            {/* <TrafficLayer autoUpdate></TrafficLayer> */}
+            {/* {directionsResponse && (
+              <DirectionsRenderer directions={directionsResponse}  />
+            )} */}
           </GoogleMap>
         </Box>
-        
+
         <Box
           p={4}
           borderRadius='lg'
@@ -447,7 +615,7 @@ function Dashboard() {
           minW='container.md'
           zIndex='1'
         >
-        
+
           <HStack spacing={2} justifyContent='space-between'>
             <Box flexGrow={1}>
               <Autocomplete>
@@ -474,26 +642,26 @@ function Dashboard() {
                 onClick={clearRoute}
               />
               <IconButton
-              aria-label='center back'
-              icon={<FaSun />}
-              isRound
-              onClick={onDrawerOpen}
-            />
-            <IconButton
-              aria-label='center back'
-              icon={<FaLocationArrow />}
-              isRound
-              onClick={() => {
-                map.panTo({lat: lat, lng: long})
-                map.setZoom(5)
-              }}
-            />
+                aria-label='center back'
+                icon={<FaSun />}
+                isRound
+                onClick={onDrawerOpen}
+              />
+              <IconButton
+                aria-label='center back'
+                icon={<FaLocationArrow />}
+                isRound
+                onClick={() => {
+                  map.panTo({ lat: lat, lng: long })
+                  map.setZoom(5)
+                }}
+              />
             </ButtonGroup>
           </HStack>
           <HStack spacing={4} mt={4} justifyContent='space-between'>
             <Text>Distance: {distance} </Text>
             <Text>Duration: {duration} </Text>
-            
+
           </HStack>
         </Box>
         <Drawer
@@ -511,7 +679,7 @@ function Dashboard() {
             <DrawerHeader>Weather Details</DrawerHeader>
 
             <DrawerBody>
-              <Weather weatherData={weatherData} weatherData2={weatherData2} srcPlace={srcPlace} endPlace={dstPlace}></Weather>
+              <Weather weatherDetails={weatherDetails}></Weather>
             </DrawerBody>
 
             <DrawerFooter>
