@@ -18,26 +18,26 @@ const Contact = () => {
           <Box p={4} borderRadius="md" boxShadow="md" bg="white">
             <Icon as={FaMapMarkerAlt} boxSize={8} color="blue.500" mb={2} />
             <Text fontWeight="bold">Head Office</Text>
-            <Text>123 Main Street</Text>
-            <Text>New York, NY 10001</Text>
+            <Text>77 William st</Text>
+            <Text>Yonkers NY 10701</Text>
             <Text mt={2}>
               <Icon as={FaPhone} boxSize={4} mr={2} />
-              (555) 123-4567
+              +18453308356
             </Text>
           </Box>
 
-          
+
 
           <Box p={4} borderRadius="md" boxShadow="md" bg="white">
             <Icon as={FaPhone} boxSize={8} color="blue.500" mb={2} />
             <Text fontWeight="bold">Phone</Text>
-            <Text>(555) 555-5555</Text>
+            <Text>+18453308356</Text>
           </Box>
 
           <Box p={4} borderRadius="md" boxShadow="md" bg="white">
             <Icon as={FaEnvelope} boxSize={8} color="blue.500" mb={2} />
             <Text fontWeight="bold">Email</Text>
-            <Text>traveller@traveller.com</Text>
+            <Text>Sandeep.Mushkam1@marist.edu</Text>
           </Box>
         </SimpleGrid>
       </Stack>
