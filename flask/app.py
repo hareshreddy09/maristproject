@@ -17,9 +17,9 @@ app = Flask(__name__, static_folder=None)
 
 app.config["JWT_SECRET_KEY"] = "secret"
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=1)
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:mysecretpassword@34.29.62.25/traveller'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:mysecretpassword@34.29.62.25/traveller'
 
 
 db = SQLAlchemy(app)
